@@ -2,36 +2,28 @@ cmake_minimum_required(VERSION 3.16)
 
 project(img-2-video LANGUAGES CXX)
 
-include_directories(src)
-include_directories(lib)
 include_directories(include)
 
 #System-dependent settings
 if (WIN32)
-    set(CMAKE_BUILD_TYPE Release)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
-else()
-    set(CMAKE_CXX_FLAGS -no-pie)
+    add_compile_definitions(I2V_WINDOWS)
 endif()
 
-#Dependencies
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_COMPILER g++)
-
-#Debug build
-if(NOT CMAKE_BUILD_TYPE MATCHES Release)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-#Libraries
-list(APPEND libs
-)
+set(CMAKE_CXX_STANDARD 11)
 
 #Main program
-add_executable(Program src/Main.cpp)
+add_executable(Program src/Main.cpp src/Img2Windows.cpp src/Img2Unix.cpp)
 set_target_properties(Program PROPERTIES OUTPUT_NAME "img2video")
-target_link_libraries(Program PRIVATE "${libs}")
 
-if (WIN32)
-	set_target_properties("${libs}" PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded")
+#Release build
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    if(MSVC)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+    elseif()
+        target_link_libraries(Program -static-libgcc -static-libstdc++)
+    endif()
 endif()
