@@ -1,7 +1,6 @@
 #ifndef IMG2VIDEO_HPP
 #define IMG2VIDEO_HPP
 
-#include <vector>
 #include <string>
 
 namespace Img2Video {
