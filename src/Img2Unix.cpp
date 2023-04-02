@@ -1,6 +1,8 @@
 #ifndef I2V_WINDOWS
 
 #include <iostream>
+#include <sstream>
+
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -29,7 +31,7 @@ namespace Img2Video {
             close(fd[0]);
             dup2(fd[1], 1);
 
-            execv("/usr/bin/which", (char**) whichArgs);
+            execvp("/usr/bin/which", (char**) whichArgs);
         }
 
         //Parent process
@@ -59,7 +61,20 @@ namespace Img2Video {
     }
 
     int runConversion(const ConversionInfo& info) {
-        return 0;
+        ostringstream str;
+        str << info.fps;
+
+        const char* args[12] = {
+            info.exeLocation.c_str(), "-y",
+            "-r", str.str().c_str(),
+            "-i", info.input.c_str(),
+            "-vcodec", "libx264",
+            "-pix_fmt", "yuv420p",
+            info.output.c_str(),
+            NULL
+        };
+
+        return execvp(info.exeLocation.c_str(), (char**) args);
     }
 }
 
