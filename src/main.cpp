@@ -1,6 +1,6 @@
 #include <wx/wx.h>
 
-#include "ConverterFrame.hpp"
+#include "UI/ConverterFrame.hpp"
 
 class ConverterApplication : public wxApp {
     public:
