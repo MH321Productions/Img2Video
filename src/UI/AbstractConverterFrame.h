@@ -50,14 +50,20 @@ class AbstractConverterFrame : public wxFrame
 		wxStaticText* lblFps;
 		wxTextCtrl* txtFps;
 		wxButton* btnStart;
+		wxButton* btnStop;
 		wxGauge* gaugeProgress;
+		wxStaticText* lblFrames;
+		wxStaticText* lblSpeed;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void onClosing( wxCloseEvent& event ) { event.Skip(); }
 		virtual void onSelectInput( wxCommandEvent& event ) { event.Skip(); }
 		virtual void onFormatInput( wxCommandEvent& event ) { event.Skip(); }
 		virtual void onSelectOutput( wxCommandEvent& event ) { event.Skip(); }
 		virtual void onFormatOutput( wxCommandEvent& event ) { event.Skip(); }
+		virtual void onFps( wxCommandEvent& event ) { event.Skip(); }
 		virtual void onConvert( wxCommandEvent& event ) { event.Skip(); }
+		virtual void onAbortConversion( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

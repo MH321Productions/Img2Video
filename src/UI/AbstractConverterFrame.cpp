@@ -13,8 +13,12 @@ AbstractConverterFrame::AbstractConverterFrame( wxWindow* parent, wxWindowID id,
 {
 	this->SetSizeHints( wxSize( -1,-1 ), wxSize( -1,-1 ) );
 
-	wxBoxSizer* szMain;
-	szMain = new wxBoxSizer( wxVERTICAL );
+	wxFlexGridSizer* szMain;
+	szMain = new wxFlexGridSizer( 4, 1, 0, 0 );
+	szMain->AddGrowableCol( 0 );
+	szMain->AddGrowableRow( 0 );
+	szMain->SetFlexibleDirection( wxBOTH );
+	szMain->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxFlexGridSizer* szIO;
 	szIO = new wxFlexGridSizer( 3, 5, 0, 0 );
@@ -73,14 +77,39 @@ AbstractConverterFrame::AbstractConverterFrame( wxWindow* parent, wxWindowID id,
 
 	szMain->Add( szIO, 1, wxEXPAND, 5 );
 
+	wxGridSizer* szActions;
+	szActions = new wxGridSizer( 1, 2, 0, 0 );
+
 	btnStart = new wxButton( this, wxID_ANY, _("Convert!"), wxDefaultPosition, wxDefaultSize, 0 );
 	btnStart->Enable( false );
 
-	szMain->Add( btnStart, 0, wxALL|wxEXPAND, 5 );
+	szActions->Add( btnStart, 0, wxALL|wxEXPAND, 5 );
+
+	btnStop = new wxButton( this, wxID_ANY, _("Abort!"), wxDefaultPosition, wxDefaultSize, 0 );
+	btnStop->Enable( false );
+
+	szActions->Add( btnStop, 0, wxALL|wxEXPAND, 5 );
+
+
+	szMain->Add( szActions, 1, wxEXPAND, 5 );
 
 	gaugeProgress = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxDefaultSize, wxGA_HORIZONTAL );
 	gaugeProgress->SetValue( 0 );
 	szMain->Add( gaugeProgress, 0, wxALL|wxEXPAND, 5 );
+
+	wxGridSizer* szStatus;
+	szStatus = new wxGridSizer( 1, 2, 0, 0 );
+
+	lblFrames = new wxStaticText( this, wxID_ANY, _("Frames: N/A"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL );
+	lblFrames->Wrap( -1 );
+	szStatus->Add( lblFrames, 0, wxALL|wxEXPAND, 5 );
+
+	lblSpeed = new wxStaticText( this, wxID_ANY, _("Speed: N/A"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL );
+	lblSpeed->Wrap( -1 );
+	szStatus->Add( lblSpeed, 0, wxALL|wxEXPAND, 5 );
+
+
+	szMain->Add( szStatus, 1, wxEXPAND, 5 );
 
 
 	this->SetSizer( szMain );
@@ -89,11 +118,14 @@ AbstractConverterFrame::AbstractConverterFrame( wxWindow* parent, wxWindowID id,
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( AbstractConverterFrame::onClosing ) );
 	btnInputFolder->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AbstractConverterFrame::onSelectInput ), NULL, this );
 	choiceInput->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( AbstractConverterFrame::onFormatInput ), NULL, this );
 	btnOutputFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AbstractConverterFrame::onSelectOutput ), NULL, this );
 	choiceOutput->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( AbstractConverterFrame::onFormatOutput ), NULL, this );
+	txtFps->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( AbstractConverterFrame::onFps ), NULL, this );
 	btnStart->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AbstractConverterFrame::onConvert ), NULL, this );
+	btnStop->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AbstractConverterFrame::onAbortConversion ), NULL, this );
 }
 
 AbstractConverterFrame::~AbstractConverterFrame()
